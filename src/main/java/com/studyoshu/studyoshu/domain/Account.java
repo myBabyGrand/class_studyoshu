@@ -43,15 +43,15 @@ public class Account {
 
     private boolean studyCreatedByEmail;
 
-    private boolean studyCreatedByWeb;
+    private boolean studyCreatedByWeb = true;
 
     private boolean studyEnrollmentResultByEmail;
 
-    private boolean studyEnrollmentResultByWeb;
+    private boolean studyEnrollmentResultByWeb = true;
 
     private boolean studyUpdatedByEmail;
 
-    private boolean studyUpdatedByWeb;
+    private boolean studyUpdatedByWeb = true;
 
     private LocalDateTime emailCheckTokenGeneratedAt;
     public void generateEmailCheckToken() {
@@ -68,8 +68,8 @@ public class Account {
         return this.emailCheckToken.equals(token);
     }
     public boolean canSendConfirmEmail() {
-        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
-//        return true;
+//        return this.emailCheckTokenGeneratedAt.isBefore(LocalDateTime.now().minusHours(1));
+        return true;
     }
 
 
