@@ -4,6 +4,8 @@ import com.studyoshu.studyoshu.account.AccountRepository;
 import com.studyoshu.studyoshu.account.SignUpForm;
 import com.studyoshu.studyoshu.account.UserAccount;
 import com.studyoshu.studyoshu.domain.Account;
+import com.studyoshu.studyoshu.domain.Tag;
+import com.studyoshu.studyoshu.domain.Zone;
 import com.studyoshu.studyoshu.settings.form.NicknameForm;
 import com.studyoshu.studyoshu.settings.form.Notifications;
 import com.studyoshu.studyoshu.settings.form.PasswordForm;
@@ -27,6 +29,8 @@ import org.thymeleaf.context.Context;
 
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -155,5 +159,35 @@ public class AccountService implements UserDetailsService {
         simpleMailMessage.setText("/login-by-email?token="+ account.getEmailCheckToken()
                 +"&email="+ account.getEmail());
         javaMailSender.send(simpleMailMessage);
+    }
+
+    public Set<Tag> getTags(Account account) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow().getTags();
+    }
+
+    public void addTag(Account account,Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().add(tag));
+    }
+
+    public void removeTag(Account account, Tag tag) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getTags().remove(tag));
+    }
+
+    public Set<Zone> getZones(Account account) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        return byId.orElseThrow().getZones();
+    }
+
+    public void addZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().add(zone));
+    }
+
+    public void removeZone(Account account, Zone zone) {
+        Optional<Account> byId = accountRepository.findById(account.getId());
+        byId.ifPresent(a -> a.getZones().remove(zone));
     }
 }

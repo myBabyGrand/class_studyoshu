@@ -1,0 +1,7 @@
+class_studyoshu\src\main\resources\static>npm install bootstrap
+class_studyoshu\src\main\resources\static>npm install jdenticon
+class_studyoshu\src\main\resources\static>npm install font-awesome
+class_studyoshu\src\main\resources\static>npm install jquery
+class_studyoshu\src\main\resources\static>npm install cropper
+class_studyoshu\src\main\resources\static>npm install jquery-cropper
+class_studyoshu\src\main\resources\static>npm install @yaireo/tagify
