@@ -1,6 +1,8 @@
 package com.studyoshu.studyoshu.account;
 
 import com.studyoshu.studyoshu.domain.Account;
+import com.studyoshu.studyoshu.mail.EmailMessage;
+import com.studyoshu.studyoshu.mail.EmailService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -33,6 +35,8 @@ class AccountControllerTest {
     private AccountRepository accountRepository;
     @MockBean
     JavaMailSender javaMailSender;
+    @MockBean
+    EmailService emailService;
 
     @Test
     @DisplayName("sign-up 화면으로 이동하는지 테스트")
@@ -75,7 +79,9 @@ class AccountControllerTest {
         assertNotEquals(account.getPassword(),"12345678");//encoded
         assertNotNull(account.getEmailCheckToken());
 
-        then(javaMailSender).should().send(ArgumentMatchers.any(SimpleMailMessage.class));
+//        then(javaMailSender).should().send(ArgumentMatchers.any(SimpleMailMessage.class));
+        then(emailService).should().sendEmail(ArgumentMatchers.any(EmailMessage.class));
+
     }
 
     @Test

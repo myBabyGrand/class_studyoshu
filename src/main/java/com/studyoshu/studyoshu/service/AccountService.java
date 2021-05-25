@@ -3,9 +3,12 @@ package com.studyoshu.studyoshu.service;
 import com.studyoshu.studyoshu.account.AccountRepository;
 import com.studyoshu.studyoshu.account.SignUpForm;
 import com.studyoshu.studyoshu.account.UserAccount;
+import com.studyoshu.studyoshu.config.AppProperties;
 import com.studyoshu.studyoshu.domain.Account;
 import com.studyoshu.studyoshu.domain.Tag;
 import com.studyoshu.studyoshu.domain.Zone;
+import com.studyoshu.studyoshu.mail.EmailMessage;
+import com.studyoshu.studyoshu.mail.EmailService;
 import com.studyoshu.studyoshu.settings.form.NicknameForm;
 import com.studyoshu.studyoshu.settings.form.Notifications;
 import com.studyoshu.studyoshu.settings.form.PasswordForm;
@@ -16,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,9 +29,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,9 +45,12 @@ import java.util.Set;
 @Transactional
 public class AccountService implements UserDetailsService {
     private final AccountRepository accountRepository;
-    private final JavaMailSender javaMailSender;
+//    private final JavaMailSender javaMailSender;
+    private final EmailService emailService;
+    private final TemplateEngine templateEngine;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final AppProperties appProperties;
 //    private final AuthenticationManager authenticationManager;
 
 
@@ -61,12 +71,26 @@ public class AccountService implements UserDetailsService {
     }
 
     private void sendEmailUsingAccount(Account newAccount) {
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setTo(newAccount.getEmail());
-        simpleMailMessage.setSubject("스터디 오슈, 회원 가입 인증");
-        simpleMailMessage.setText("/check-email-token?token="+ newAccount.getEmailCheckToken()
+        Context context = new Context();
+        context.setVariable("link", "/check-email-token?token="+ newAccount.getEmailCheckToken()
                 +"&email="+ newAccount.getEmail());
-        javaMailSender.send(simpleMailMessage);
+        context.setVariable("nickname", newAccount.getNickname());
+        context.setVariable("linkName", "이메일 인증하기");
+        context.setVariable("message", "스터디오슈 서비스를 사용하려면 링크를 클릭하세요");
+        context.setVariable("host", appProperties.getHost());
+        String message = templateEngine.process("mail/simple-link", context);
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(newAccount.getEmail())
+                .subject("스터디오슈, 회원 가입 인증")
+                .message(message).build();
+        emailService.sendEmail(emailMessage);
+
+//        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+//        simpleMailMessage.setTo(newAccount.getEmail());
+//        simpleMailMessage.setSubject("스터디오슈, 회원 가입 인증");
+//        simpleMailMessage.setText("/check-email-token?token="+ newAccount.getEmailCheckToken()
+//                +"&email="+ newAccount.getEmail());
+//        javaMailSender.send(simpleMailMessage);
     }
 
     public Account processNewAccount(SignUpForm signUpForm) {
@@ -153,12 +177,25 @@ public class AccountService implements UserDetailsService {
 
     public void sendLoginLink(Account account) {
         account.generateEmailCheckToken();
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setTo(account.getEmail());
-        simpleMailMessage.setSubject("스터디 오슈, 로그인 링크");
-        simpleMailMessage.setText("/login-by-email?token="+ account.getEmailCheckToken()
-                +"&email="+ account.getEmail());
-        javaMailSender.send(simpleMailMessage);
+        Context context = new Context();
+        context.setVariable("link", "/login-by-email?token="+ account.getEmailCheckToken()+"&email="+ account.getEmail());
+        context.setVariable("nickname", account.getNickname());
+        context.setVariable("linkName", "이메일로 로그인하기");
+        context.setVariable("message", "로그인 하려면 아래 링크를 클릭하세요");
+        context.setVariable("host", appProperties.getHost());
+        String message = templateEngine.process("mail/simple-link", context);
+        EmailMessage emailMessage = EmailMessage.builder()
+                .to(account.getEmail())
+                .subject("스터디오슈, 로그인 링크")
+                .message(message)
+                .build();
+        emailService.sendEmail(emailMessage);
+//        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+//        simpleMailMessage.setTo(account.getEmail());
+//        simpleMailMessage.setSubject("스터디오슈, 로그인 링크");
+//        simpleMailMessage.setText("/login-by-email?token="+ account.getEmailCheckToken()
+//                +"&email="+ account.getEmail());
+//        javaMailSender.send(simpleMailMessage);
     }
 
     public Set<Tag> getTags(Account account) {
