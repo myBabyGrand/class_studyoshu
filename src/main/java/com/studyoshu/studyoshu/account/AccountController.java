@@ -5,9 +5,6 @@ import com.studyoshu.studyoshu.domain.Account;
 import com.studyoshu.studyoshu.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 
 @Controller
 @Slf4j
@@ -73,14 +69,14 @@ public class AccountController {
     }
 
     @GetMapping("/check-email")
-    public String checkEmmail(@CurrentUser Account account, Model model){
+    public String checkEmmail(@CurrentAccount Account account, Model model){
         model.addAttribute("e" +
                 "email", account.getEmail());
         return "account/check-email";
     }
 
     @GetMapping("/resend-confirm-email")
-    public String resendConfirmEmail(@CurrentUser Account account, Model model) {
+    public String resendConfirmEmail(@CurrentAccount Account account, Model model) {
         if (!account.canSendConfirmEmail()) {
             model.addAttribute("error", "인증 이메일은 1시간에 한번만 전송할 수 있습니다.");
             model.addAttribute("email", account.getEmail());
@@ -92,12 +88,8 @@ public class AccountController {
     }
 
     @GetMapping("profile/{nickname}")
-    public String viewProfile(@PathVariable String nickname, Model model, @CurrentUser Account account){
-        Account byNickName = accountRepository.findByNickname(nickname);
-        if(nickname==null){
-            throw  new IllegalArgumentException(nickname+"에 해당하는 사용자가 없습니다.");
-        }
-//        model.addAttribute("account", byNickName);
+    public String viewProfile(@PathVariable String nickname, Model model, @CurrentAccount Account account){
+        Account byNickName = accountService.getAccount(nickname);
         model.addAttribute(byNickName);
         model.addAttribute("isOwner", account.equals(byNickName));
         return "account/profile";

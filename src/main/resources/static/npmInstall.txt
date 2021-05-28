@@ -5,3 +5,4 @@ class_studyoshu\src\main\resources\static>npm install jquery
 class_studyoshu\src\main\resources\static>npm install cropper
 class_studyoshu\src\main\resources\static>npm install jquery-cropper
 class_studyoshu\src\main\resources\static>npm install @yaireo/tagify
+class_studyoshu\src\main\resources\static>npm install summernote

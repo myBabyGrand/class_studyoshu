@@ -1,7 +1,6 @@
 package com.studyoshu.studyoshu.settings.validator;
 
 import com.studyoshu.studyoshu.account.AccountRepository;
-import com.studyoshu.studyoshu.account.CurrentUser;
 import com.studyoshu.studyoshu.domain.Account;
 import com.studyoshu.studyoshu.settings.form.NicknameForm;
 import lombok.RequiredArgsConstructor;
