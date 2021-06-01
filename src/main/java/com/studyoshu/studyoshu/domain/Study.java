@@ -66,13 +66,13 @@ public class Study {
 
     private LocalDateTime recruitingUpdatedDateTime;
 
-    private boolean isRecruiting;
+    private boolean recruiting;
 
-    private boolean isPublished;
+    private boolean published;
 
-    private boolean isClosed;
+    private boolean closed;
 
-    private boolean isUseBanner;
+    private boolean useBanner;
 
     private int memberCount;
 
@@ -110,20 +110,20 @@ public class Study {
     }
 
     public boolean canUpdateRecruiting() {
-        return this.isPublished && this.recruitingUpdatedDateTime == null  || this.recruitingUpdatedDateTime.isBefore(LocalDateTime.now().minusHours(1));
+        return this.published && this.recruitingUpdatedDateTime == null  || this.recruitingUpdatedDateTime.isBefore(LocalDateTime.now().minusHours(1));
     }
 
     public void publish() {
-        if(!this.isClosed && !this.isPublished){
-            this.isPublished = true;
+        if(!this.closed && !this.published){
+            this.published = true;
             this.publishedDateTime = LocalDateTime.now();
         }else{
             throw new RuntimeException("스터디를 공개 할 수 없습니다. 이미 공개 하였거나, 종료된 상태입니다.");
         }
     }
     public void close() {
-        if(!this.isClosed && this.isPublished){
-            this.isClosed = true;
+        if(!this.closed && this.published){
+            this.closed = true;
             this.closedDateTime = LocalDateTime.now();
         }else{
             throw new RuntimeException("스터디를 종료 할 수 없습니다. 이미 공개 하였거나, 종료된 상태입니다.");
@@ -131,7 +131,7 @@ public class Study {
     }
     public void startRecruit() {
         if (canUpdateRecruiting()) {
-            this.isRecruiting = true;
+            this.recruiting = true;
             this.recruitingUpdatedDateTime = LocalDateTime.now();
         } else {
             throw new RuntimeException("인원 모집을 시작할 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
@@ -140,14 +140,14 @@ public class Study {
 
     public void stopRecruit() {
         if (canUpdateRecruiting()) {
-            this.isRecruiting = false;
+            this.recruiting = false;
             this.recruitingUpdatedDateTime = LocalDateTime.now();
         } else {
             throw new RuntimeException("인원 모집을 종료할 수 없습니다. 스터디를 공개하거나 한 시간 뒤 다시 시도하세요.");
         }
     }
     public boolean isRemovable() {
-        return !this.isPublished;
+        return !this.published;
 //                && this.meetingCount <1; // TODO 모임을 했던 스터디는 삭제할 수 없다.
     }
 
