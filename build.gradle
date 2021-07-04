@@ -39,19 +39,32 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.2'
 	testImplementation 'com.tngtech.archunit:archunit-junit5:0.13.1'
-	/* testcontainers */
-//	testImplementation 'org.testcontainers:testcontainers:1.14.3'
-//	testImplementation 'org.testcontainers:postgresql:1.14.3'
-//	testImplementation 'org.testcontainers:junit-jupiter:1.14.3'
 	// https://mvnrepository.com/artifact/org.testcontainers/testcontainers
 	testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.13.0'
 	// https://mvnrepository.com/artifact/org.testcontainers/junit-jupiter
 	testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.13.0'
 	// https://mvnrepository.com/artifact/org.testcontainers/postgresql
 	testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.13.0'
+	//QueryDsl : https://jojoldu.tistory.com/538
+	compile "com.querydsl:querydsl-jpa"
+	compile "com.querydsl:querydsl-core"
+	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api:2.2.3"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api:1.3.5"
+}
 
+// querydsl 적용
+def generated='src/main/generated'
+sourceSets {
+	main.java.srcDirs += [ generated ]
+}
 
+tasks.withType(JavaCompile) {
+	options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+}
 
+clean.doLast {
+	file(generated).deleteDir()
 }
 
 test {

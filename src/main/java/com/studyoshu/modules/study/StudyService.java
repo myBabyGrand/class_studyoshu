@@ -1,5 +1,7 @@
 package com.studyoshu.modules.study;
 
+import com.studyoshu.modules.study.event.StudyCreateEvent;
+import com.studyoshu.modules.study.event.StudyUpdateEvent;
 import com.studyoshu.modules.study.form.StudyDescriptionForm;
 import com.studyoshu.modules.study.form.StudyForm;
 import com.studyoshu.modules.tag.Tag;
@@ -7,6 +9,7 @@ import com.studyoshu.modules.account.Account;
 import com.studyoshu.modules.zone.Zone;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +21,12 @@ public class StudyService {
 
     private final StudyRepository studyRepository;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Study createNewStudy(Study study, Account account) {
         study.addManager(account);
         Study newStudy = studyRepository.save(study);
+//        eventPublisher.publishEvent(new StudyCreateEvent(newStudy)); //스터디가 공개되었을때 알림이 가겠금 수정
         return newStudy;
     }
 
@@ -51,6 +56,7 @@ public class StudyService {
     public void updateStudyDescription(Study study, StudyDescriptionForm studyDescriptionForm) {
         modelMapper.map(studyDescriptionForm, study);
 //        studyRepository.save(study); //pesistance 상태므로 불필요
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디 소개를 수정하였습니다."));
     }
 
     public void updateStudyImage(Study study, String image) {
@@ -113,18 +119,22 @@ public class StudyService {
 
     public void publish(Study study) {
         study.publish();
+        this.eventPublisher.publishEvent(new StudyCreateEvent(study));
     }
 
     public void close(Study study) {
         study.close();
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디를 종료하였습니다."));
     }
 
     public void startRecruit(Study study) {
         study.startRecruit();
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디의 팀원 모집을 시작하였습니다."));
     }
 
     public void stopRecruit(Study study) {
         study.stopRecruit();
+        eventPublisher.publishEvent(new StudyUpdateEvent(study, "스터디의 팀원 모집을 중지하였습니다."));
     }
 
     public boolean isValidPath(String newPath) {
