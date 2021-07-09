@@ -14,42 +14,88 @@
     <script src="/node_modules/jdenticon/dist/jdenticon.min.js"></script>
 
   <style>
-    .container {
-      max-width: 100%;
-    }
-    .tagify-outside{
-        border: 0;
-        padding: 0;
-        margin: 0;
-    }
-    #study-logo {
-        height: 200px;
-        width: 100%;
-        overflow: hidden;
-        padding: 0;
-        margin: 0;
-    }
+      .container {
+          max-width: 100%;
+      }
 
-    #study-logo img {
-        height: auto;
-        width: 100%;
-        overflow: hidden;
-    }
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
+      .tagify-outside{
+          border: 0;
+          padding: 0;
+          margin: 0;
+      }
 
-    body,
-    input,
-    button,
-    select,
-    optgroup,
-    textarea,
-    .tooltip,
-    .popover {
-        font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
+      #study-logo {
+          height: 200px;
+          width: 100%;
+          overflow: hidden;
+          padding: 0;
+          margin: 0;
+      }
 
+      #study-logo img {
+          height: auto;
+          width: 100%;
+          overflow: hidden;
+      }
+
+      body {
+          font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+
+      body,
+      input,
+      button,
+      select,
+      optgroup,
+      textarea,
+      .tooltip,
+      .popover {
+          font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      }
+
+      table th {
+          font-weight: lighter;
+      }
+
+      mark {
+          padding: 0;
+          background: transparent;
+          background: linear-gradient(to right, #f0ad4e 50%, transparent 50%);
+          background-position: right bottom;
+          background-size: 200% 100%;
+          transition: all .5s ease;
+          color: #fff;
+      }
+
+      mark.animate {
+          background-position: left bottom;
+          color: #000;
+      }
+
+      .jumbotron {
+          padding-top: 3rem;
+          padding-bottom: 3rem;
+          margin-bottom: 0;
+          background-color: #fff;
+      }
+      @media (min-width: 768px) {
+          .jumbotron {
+              padding-top: 6rem;
+              padding-bottom: 6rem;
+          }
+      }
+
+      .jumbotron p:last-child {
+          margin-bottom: 0;
+      }
+
+      .jumbotron h1 {
+          font-weight: 300;
+      }
+
+      .jumbotron .container {
+          max-width: 40rem;
+      }
   </style>
 </head>
 <nav th:fragment="main-nav" class="navbar navbar-expand-sm navbar-dark bg-dark">
@@ -154,117 +200,6 @@
             xhr.setRequestHeader(csrfHeader, csrfToken);
         });
     });
-</script>
-<div th:fragment="update-tags (baseUrl)">
-    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
-    <script type="application/javascript" th:inline="javascript">
-        $(function() {
-            function tagRequest(url, tagTitle) {
-                $.ajax({
-                    dataType: "json",
-                    autocomplete: {
-                        enabled: true,
-                        rightKey: true,
-                    },
-                    contentType: "application/json; charset=utf-8",
-                    method: "POST",
-                    url: "[(${baseUrl})]" + url,
-                    data: JSON.stringify({'tagTitle': tagTitle})
-                }).done(function (data, status) {
-                    console.log("${data} and status is ${status}");
-                });
-            }
-
-            function onAdd(e) {
-                tagRequest("/add", e.detail.data.value);
-            }
-
-            function onRemove(e) {
-                tagRequest("/remove", e.detail.data.value);
-            }
-
-            var tagInput = document.querySelector("#tags");
-            var tagify = new Tagify(tagInput, {
-                pattern: /^.{0,20}$/,
-                whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
-                dropdown : {
-                    enabled: 1, // suggest tags after a single character input
-                } // map tags
-            });
-            tagify.on("add", onAdd);
-            tagify.on("remove", onRemove);
-            // add a class to Tagify's input element
-            tagify.DOM.input.classList.add('form-control');
-            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
-            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
-        });
-    </script>
-</div>
-<div th:fragment="update-zones (baseUrl)">
-    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
-    <script type="application/javascript">
-        $(function () {
-            function tagRequest(url, zoneName) {
-                $.ajax({
-                    dataType: "json",
-                    autocomplete: {
-                        enabled: true,
-                        rightKey: true,
-                    },
-                    contentType: "application/json; charset=utf-8",
-                    method: "POST",
-                    url: "[(${baseUrl})]" + url,
-                    data: JSON.stringify({'zoneName': zoneName})
-                }).done(function (data, status) {
-                    console.log("${data} and status is ${status}");
-                });
-            }
-
-            function onAdd(e) {
-                tagRequest("/add", e.detail.data.value);
-            }
-
-            function onRemove(e) {
-                tagRequest("/remove", e.detail.data.value);
-            }
-
-            var tagInput = document.querySelector("#zones");
-
-            var tagify = new Tagify(tagInput, {
-                enforceWhitelist: true,
-                whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
-                dropdown : {
-                    enabled: 1, // suggest tags after a single character input
-                } // map tags
-            });
-
-            tagify.on("add", onAdd);
-            tagify.on("remove", onRemove);
-
-            // add a class to Tagify's input element
-            tagify.DOM.input.classList.add('form-control');
-            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
-            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
-        });
-    </script>
-</div>
-<div th:fragment="editor-script">
-    <script src="/node_modules/summernote/dist/summernote-bs4.js"></script>
-    <script type="application/javascript">
-        $(function () {
-            $('.editor').summernote({
-                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Noto Sans KR', 'Merriweather'],
-                placeholder: '스터디의 목표, 일정, 진행 방식, 사용할 교재 또는 인터넷 강좌 그리고 모집중인 스터디원 등 스터디에 대해 자세히 적어 주세요.',
-                tabsize: 2,
-                height: 300
-            });
-        });
-    </script>
-</div>
-<script th:fragment="tooltip" type="application/javascript">
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-    })
 </script>
 <div th:fragment="study-banner" th:if="${study.useBanner}" class="row" id="study-logo">
     <img th:src="${study.image}"/>
@@ -378,11 +313,154 @@
     <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'study'}? active"
        href="#" th:href="@{'/study/' + ${study.path} + '/settings/study'}">스터디</a>
 </div>
+<div th:fragment="editor-script">
+    <script src="/node_modules/summernote/dist/summernote-bs4.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            $('.editor').summernote({
+                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Noto Sans KR', 'Merriweather'],
+                placeholder: '스터디의 목표, 일정, 진행 방식, 사용할 교재 또는 인터넷 강좌 그리고 모집중인 스터디원 등 스터디에 대해 자세히 적어 주세요.',
+                tabsize: 2,
+                height: 300
+            });
+        });
+    </script>
+</div>
+
 <div th:fragment="message" th:if="${message}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
     <span th:text="${message}">완료</span>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
+</div>
+
+<script th:fragment="tooltip" type="application/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
+
+<div th:fragment="update-tags (baseUrl)">
+    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+    <script type="application/javascript" th:inline="javascript">
+        $(function() {
+            function tagRequest(url, tagTitle) {
+                $.ajax({
+                    dataType: "json",
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true,
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    method: "POST",
+                    url: "[(${baseUrl})]" + url,
+                    data: JSON.stringify({'tagTitle': tagTitle})
+                }).done(function (data, status) {
+                    console.log("${data} and status is ${status}");
+                });
+            }
+
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value);
+            }
+
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value);
+            }
+
+            var tagInput = document.querySelector("#tags");
+            var tagify = new Tagify(tagInput, {
+                pattern: /^.{0,20}$/,
+                whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
+                dropdown : {
+                    enabled: 1, // suggest tags after a single character input
+                } // map tags
+            });
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+            // add a class to Tagify's input element
+            tagify.DOM.input.classList.add('form-control');
+            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        });
+    </script>
+</div>
+<div th:fragment="update-zones (baseUrl)">
+    <script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            function tagRequest(url, zoneName) {
+                $.ajax({
+                    dataType: "json",
+                    autocomplete: {
+                        enabled: true,
+                        rightKey: true,
+                    },
+                    contentType: "application/json; charset=utf-8",
+                    method: "POST",
+                    url: "[(${baseUrl})]" + url,
+                    data: JSON.stringify({'zoneName': zoneName})
+                }).done(function (data, status) {
+                    console.log("${data} and status is ${status}");
+                });
+            }
+
+            function onAdd(e) {
+                tagRequest("/add", e.detail.data.value);
+            }
+
+            function onRemove(e) {
+                tagRequest("/remove", e.detail.data.value);
+            }
+
+            var tagInput = document.querySelector("#zones");
+
+            var tagify = new Tagify(tagInput, {
+                enforceWhitelist: true,
+                whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
+                dropdown : {
+                    enabled: 1, // suggest tags after a single character input
+                } // map tags
+            });
+
+            tagify.on("add", onAdd);
+            tagify.on("remove", onRemove);
+
+            // add a class to Tagify's input element
+            tagify.DOM.input.classList.add('form-control');
+            // re-place Tagify's input element outside of the  element (tagify.DOM.scope), just before it
+            tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+        });
+    </script>
+</div>
+<div th:fragment="date-time">
+    <script src="/node_modules/moment/min/moment-with-locales.min.js"></script>
+    <script type="application/javascript">
+        $(function () {
+            moment.locale('ko');
+            $(".date-time").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LLL');
+            });
+            $(".date").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LL');
+            });
+            $(".weekday").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('dddd');
+            });
+            $(".time").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LT');
+            });
+            $(".calendar").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").calendar();
+            });
+            $(".fromNow").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").fromNow();
+            });
+            $(".date-weekday-time").text(function(index, dateTime) {
+                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LLLL');
+            });
+        })
+    </script>
 </div>
 <div th:fragment="event-form (mode, action)">
     <div class="py-5 text-center">
@@ -477,35 +555,7 @@
         </form>
     </div>
 </div>
-<div th:fragment="date-time">
-    <script src="/node_modules/moment/min/moment-with-locales.min.js"></script>
-    <script type="application/javascript">
-        $(function () {
-            moment.locale('ko');
-            $(".date-time").text(function(index, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LLL');
-            });
-            $(".date").text(function(index, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LL');
-            });
-            $(".weekday").text(function(index, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('dddd');
-            });
-            $(".time").text(function(index, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LT');
-            });
-            $(".calendar").text(function(index, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").calendar();
-            });
-            $(".fromNow").text(function(index, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").fromNow();
-            });
-            $(".date-weekday-time").text(function(index, dateTime) {
-                return moment(dateTime, "YYYY-MM-DD`T`hh:mm").format('LLLL');
-            });
-        })
-    </script>
-</div>
+
 <ul th:fragment="notification-list (notifications)" class="list-group list-group-flush">
     <a href="#" th:href="@{${noti.link}}" th:each="noti: ${notifications}"
        class="list-group-item list-group-item-action">
@@ -516,4 +566,38 @@
         <p th:text="${noti.message}" class="text-left mb-0 mt-1">message</p>
     </a>
 </ul>
+<div th:fragment="study-list (studyList)" class="col-sm-12">
+    <div class="row">
+        <div class="col-md-4" th:each="study: ${studyList}">
+            <div class="card mb-4 shadow-sm">
+                <img th:src="${study.image}" class="card-img-top" th:alt="${study.title}" >
+                <div class="card-body">
+                    <a th:href="@{'/study/' + ${study.path}}" class="text-decoration-none">
+                        <h5 class="card-title context" th:text="${study.title}"></h5>
+                    </a>
+                    <p class="card-text" th:text="${study.shortDescription}">Short description</p>
+                    <p class="card-text context">
+                                <span th:each="tag: ${study.tags}" class="font-weight-light text-monospace badge badge-pill badge-info mr-3">
+                                    <a th:href="@{'/search/tag/' + ${tag.title}}" class="text-decoration-none text-white">
+                                        <i class="fa fa-tag"></i> <span th:text="${tag.title}">Tag</span>
+                                    </a>
+                                </span>
+                        <span th:each="zone: ${study.zones}" class="font-weight-light text-monospace badge badge-primary mr-3">
+                                    <a th:href="@{'/search/zone/' + ${zone.id}}" class="text-decoration-none text-white">
+                                        <i class="fa fa-globe"></i> <span th:text="${zone.localNameOfCity}" class="text-white">City</span>
+                                    </a>
+                                </span>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fa fa-user-circle"></i>
+                            <span th:text="${study.memberCount}"></span>명
+                        </small>
+                        <small class="text-muted date" th:text="${study.publishedDateTime}">9 mins</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </html>
